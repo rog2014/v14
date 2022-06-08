@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="xf_doc_approval_document_package_form" model="ir.ui.view">
+            <field name="name">xf_doc_approval_document_package_form</field>
+            <field name="model">xf.doc.approval.document.package</field>
+            <field name="arch" type="xml">
+                <form>
+                    <field name="is_initiator" invisible="True"/>
+                    <field name="is_approver" invisible="True"/>
+                    <header>
+                        <button string="Send for Approval" name="action_send_for_approval" type="object" states="draft"
+                                class="oe_highlight"
+                                attrs="{'invisible':['|', ('is_initiator', '!=', True)]}"
+                                confirm="Please confirm that you want to send documents for approval"/>
+                        <button string="Approve" name="action_approve_wizard" type="object" states="approval"
+                                class="oe_highlight"
+                                attrs="{'invisible':['|', ('is_approver', '!=', True)]}"/>
+                        <button string="Reject" name="action_reject_wizard" type="object" states="approval"
+                                attrs="{'invisible':['|', ('is_approver', '!=', True)]}"/>
+                        <button string="Set to Draft" name="action_draft" type="object" states="rejected,cancelled"
+                                attrs="{'invisible':['|', ('is_initiator', '!=', True)]}"/>
+                        <button string="Cancel" name="action_cancel" type="object" states="approval"
+                                attrs="{'invisible':['|', ('is_initiator', '!=', True)]}"
+                                confirm="Please confirm that you want to cancel approval process"/>
+                        <button string="Force Cancel" name="action_cancel" type="object" states="approved"
+                                groups="base.group_system"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approval,approved"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <h2>
+                                <field name="name" placeholder="Document Title" nolabel="1" colspan="4"/>
+                            </h2>
+                        </group>
+                        <group name="description" string="Description"
+                               attrs="{'invisible':[('state', '!=', 'draft'), ('description', '=', False)]}">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                        <group name="documents" string="Documents">
+                            <field name="document_ids" nolabel="1" colspan="4">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="file" filename="file_name"/>
+                                    <field name="file_name" invisible="True"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="name"/>
+                                        <field name="file" filename="file_name"/>
+                                        <field name="file_name" invisible="True"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                        <group attrs="{'invisible':[('is_initiator', '!=', True)]}">
+                            <group name="visibility" string="Visibility">
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="visibility"/>
+                            </group>
+                            <group name="approval" string="Approval">
+                                <field name="approval_team_id"/>
+                                <field name="method"/>
+                                <field name="approval_state"/>
+                                <field name="approval_step"/>
+                            </group>
+                        </group>
+                        <group name="approvers" string="Approvers">
+                            <field name="approver_ids" nolabel="1" colspan="4">
+                                <tree editable="bottom">
+                                    <field name="step"/>
+                                    <field name="user_id"/>
+                                    <field name="role"/>
+                                    <field name="state"/>
+                                    <field name="method" invisible="True"/>
+                                    <field name="notes"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="user_id"/>
+                                            <field name="role"/>
+                                        </group>
+                                        <group>
+                                            <field name="step"/>
+                                            <field name="state"/>
+                                            <field name="method" invisible="True"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                        <field name="notes"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="initiator_user_id"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="xf_doc_approval_document_package_tree" model="ir.ui.view">
+            <field name="name">xf_doc_approval_document_package_tree</field>
+            <field name="model">xf.doc.approval.document.package</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="initiator_user_id"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="action_xf_doc_approval_document_package" model="ir.actions.act_window">
+            <field name="name">Documents</field>
+            <field name="res_model">xf.doc.approval.document.package</field>
+        </record>
+
+        <menuitem
+                id="menu_xf_doc_approval_document_package"
+                action="action_xf_doc_approval_document_package"
+                parent="menu_xf_doc_approval_root"
+                sequence="1"
+        />
+
+    </data>
+</odoo>
